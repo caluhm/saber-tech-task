@@ -9,7 +9,7 @@ import { useDocumentStore } from "@/hooks/useDocumentStore";
 import { parseRegex } from "@/lib/utils";
 
 export function EditMode() {
-  const { content, setMatches } = useDocumentStore();
+  const { content, setMatches, matches } = useDocumentStore();
   const { regexes, deleteRegex } = useRegexStore();
 
   const updateRegexMatches = (regexToUpdate: RegexValue[]) => {
@@ -28,11 +28,18 @@ export function EditMode() {
 
       // Dedupplicate any matches so we don't store duplicates
       const uniqueMatches = Array.from(new Set(matchResults));
-      return uniqueMatches.map((match) => ({
-        approved: false,
-        regex,
-        match,
-      }));
+      return uniqueMatches.map((match) => {
+        // Check if this match was previously approved
+        const existingMatch = matches.find(
+          (m) => m.regex.id === regex.id && m.match === match
+        );
+
+        return {
+          approved: existingMatch?.approved || false,
+          regex,
+          match,
+        };
+      });
     });
 
     const flattenedMatches = latestMatches.flat();
