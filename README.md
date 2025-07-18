@@ -1,36 +1,82 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Regex Extraction UI
+
+This is a [Next.js](https://nextjs.org) project that provides a user interface for regex pattern extraction and approval workflow. Users can create regex patterns, extract matches from documents, and approve individual matches.
+
+## Features
+
+- **Regex Management**: Create, edit, and delete regex patterns with validation
+- **Document Processing**: Extract matches from documents using regex patterns
+- **Approval Workflow**: Review and approve individual matches
+- **Persistent Storage**: State managed with React Query and localStorage
+- **Real-time Updates**: Automatic match updates when patterns change
 
 ## Getting Started
 
-First, run the development server:
+First, install dependencies:
+
+```bash
+npm install
+```
+
+Then run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Available Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `npm run dev` - Start development server with Turbopack
+- `npm run build` - Build the application for production
+- `npm run start` - Start the production server
+- `npm run lint` - Run ESLint for code quality
+- `npm test` - Run tests with coverage
+- `npm run test:watch` - Run tests in watch mode
+- `npm run test:ui` - Run tests with UI interface
+- `npm run test:preview` - Preview tests with vitest-preview
+- `npm run showcoverage` - Open test coverage report (macOS/Linux)
+- `npm run showcoverage:windows` - Open test coverage report (Windows)
 
-## Learn More
+## Architecture
 
-To learn more about Next.js, take a look at the following resources:
+- React Query for syncing and updating local storage state, with optimistic updates
+- Shadcn/ui for re-usable UI components with consistent good defaults, built on top of Radix UI
+- React Hook Form and Zod for form handling and validation
+- Vitest and React Testing Library for integration testing the core user flows
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+app/
+├── (home)/
+│   ├── components/
+│   │   ├── edit-mode.tsx
+│   │   ├── approval-mode.tsx
+│   │   ├── regex-form-dialog.tsx
+│   │   └── sidebar.tsx
+│   ├── page.tsx
+│   └── HomePage.test.tsx
+├── globals.css
+└── layout.tsx
+components/ui/          # shadcn/ui components
+hooks/                  # Custom React hooks
+├── useRegexStore.ts    # Regex pattern management
+└── useDocumentStore.ts # Document and match management
+lib/
+└── utils.ts           # Utility functions
+```
 
-## Deploy on Vercel
+## Assumptions
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Documents are assumed to be small in size, but if they were not, some things to consider:
+  - Server-side processing for regex matching, so the client does not have to handle the processing where hardware resources are unknown
+  - Virtualization for the document content so that only the visible portion is rendered, improving performance
+- If there are multiple matches for a regex pattern, it should only displayed once, I did think about adding a count attribute to indicate the number of matches, but it wasn't required for the task
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Development Notes
+
+- I would favour testing local storage persistance in a browser environment, such as writing an e2e test with Playwright. But I didn't want to spend too much time on this task.
+- If this were a production application, I would consider Storybook tests for the re-usable UI components, brought in from shadcn/ui in this case.
+- Integration style tests are used to cover the core user flows, these often provide the most value and confidence in the application, therefore I have focused on these.
