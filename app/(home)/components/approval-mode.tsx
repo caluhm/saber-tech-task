@@ -27,9 +27,9 @@ export function ApprovalMode() {
     setMatches(updatedMatches);
   };
 
-  const selectedMatches = matches.filter(
-    (match) => match.regex.id === selectedRegex
-  );
+  const selectedMatches = selectedRegex
+    ? matches.filter((match) => match.regex.id === selectedRegex)
+    : [];
   const unapprovedMatches = selectedMatches.filter((match) => !match.approved);
   const approvedMatches = selectedMatches.filter((match) => match.approved);
 
